@@ -1,3 +1,8 @@
+#Others
+*.opendb
+*.db-wal
+*.db-shm
+
 # Prerequisites
 *.d
 
