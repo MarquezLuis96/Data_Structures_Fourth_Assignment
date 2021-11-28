@@ -56,7 +56,7 @@ template <class dataType>
 bool Pila<dataType>::limpiarPila() {
 	Nodo* aux;
 	if (pilaVacia()) {
-		cerr << "Error: La pila ya se encuentra vacia." << endl;
+		//cerr << "Error: La pila ya se encuentra vacia." << endl;
 		return false;
 	}
 
@@ -175,6 +175,8 @@ void notacionPolacaInversa(string expresion) {
 	char caracter;
 	char caracterAux;
 
+	cout << "Expresion antes de la transformacion: " << expresion << endl;
+
 	for (int i = 0; i < expresion.length(); i++) {
 		caracter = expresion.at(i);
 		if (caracter == '+' || caracter == '-' || caracter == '*' || caracter == '/' || caracter == '^' || caracter == '(' || caracter == ')') {
@@ -214,7 +216,7 @@ void notacionPolacaInversa(string expresion) {
 			contadorPolacaInversa++;
 		}
 
-		if (i == expresion.length()) {
+		if (i == expresion.length()-1) {
 			while (!pila.pilaVacia()) {
 				polacaInversa[contadorPolacaInversa] = pila.pop();
 				contadorPolacaInversa++;
@@ -222,10 +224,27 @@ void notacionPolacaInversa(string expresion) {
 			break;
 		}
 	}
+
+	cout << "Expresion luego de la transformacion: " << endl;
+	for (int i = 0; i < contadorPolacaInversa; i++) {
+		cout << polacaInversa[i];
+	}
+	cout << endl;
+	pila.~Pila();
 }
 
 //Funcion principal
 int main(int args, char* argsv[]) {
 	//Code Here
+
+	notacionPolacaInversa("a*(b+c-(d/e^f)-g)-h");
+	
+	notacionPolacaInversa("a*b/(a+c)");
+	
+	notacionPolacaInversa("a*b/a+c");
+
+	notacionPolacaInversa("(a-b)^c+d");
+
+
 	return 0;
 }
