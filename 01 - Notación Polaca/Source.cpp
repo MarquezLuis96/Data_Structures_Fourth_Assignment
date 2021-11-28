@@ -1,5 +1,6 @@
 //Headers
 #include <iostream>
+const int MAX = 100;
 
 //Declaracion de namespaces
 using namespace std;
@@ -121,6 +122,105 @@ void Pila<dataType>::imprimirElementos() {
 		cout << "Elemento " << auxCant << " : " << aux->dato << endl;
 		auxCant--;
 		aux = aux->siguiente;
+	}
+}
+
+//RETORNA TRUE SI VA A LA PILA
+bool compararOperadores(char nuevoOperador, Pila<char> *pila) {
+	if (pila->pilaVacia()) {
+		return true;
+	}
+
+	char charAux = pila->topeDePila();
+	
+	if (nuevoOperador == '(') {
+		return true;
+	}
+
+	if (nuevoOperador == '^') {
+		return true;
+	}
+
+	if (nuevoOperador == '+' && charAux == '-' || nuevoOperador == '+' && charAux == '(') {
+		return true;
+	}
+
+	if (nuevoOperador == '-' && charAux == '(') {
+		return true;
+	}
+
+	if (nuevoOperador == '*' || nuevoOperador == '/') {
+		if (nuevoOperador == '*') {
+			if (charAux == '/' || charAux == '+' || charAux == '-' || charAux == '(') {
+				return	true;
+			}
+		}
+		
+		if (nuevoOperador == '/') {
+			if (charAux == '+' || charAux == '-' || charAux == '(') {
+				return true;
+			}
+		}
+	}
+
+	return false;
+}
+
+void notacionPolacaInversa(string expresion) {
+	Pila<char> pila;
+	
+	char polacaInversa[MAX];
+	int contadorPolacaInversa = 0;
+	
+	char caracter;
+	char caracterAux;
+
+	for (int i = 0; i < expresion.length(); i++) {
+		caracter = expresion.at(i);
+		if (caracter == '+' || caracter == '-' || caracter == '*' || caracter == '/' || caracter == '^' || caracter == '(' || caracter == ')') {
+			if (pila.pilaVacia()) {
+				pila.push(caracter);
+			}
+			else {
+				if (caracter == ')') {
+					//Entra aca si el caracter es el cierre del operador de maxima prioridad: parentesis ("()")
+					caracterAux = pila.topeDePila();
+					while (caracterAux != '(') {
+						polacaInversa[contadorPolacaInversa] = pila.pop();
+						contadorPolacaInversa++;
+						caracterAux = pila.topeDePila();
+						if (caracterAux == '(') {
+							pila.pop();
+						}
+					}
+				}
+				else {
+					bool bandera;
+					do {
+						bandera = compararOperadores(caracter, &pila);
+						if (bandera == true) {
+							pila.push(caracter);
+						}
+						else {
+							polacaInversa[contadorPolacaInversa] = pila.pop();
+							contadorPolacaInversa++;
+						}
+					} while (!bandera);
+				}
+			}
+		}
+		else {
+			polacaInversa[contadorPolacaInversa] = caracter;
+			contadorPolacaInversa++;
+		}
+
+		if (i == expresion.length()) {
+			while (!pila.pilaVacia()) {
+				polacaInversa[contadorPolacaInversa] = pila.pop();
+				contadorPolacaInversa++;
+			}
+			break;
+		}
 	}
 }
 
