@@ -177,7 +177,7 @@ void notacionPolacaInversa(string expresion) {
 
 	cout << "Expresion antes de la transformacion: " << expresion << endl;
 
-	for (int i = 0; i < expresion.length(); i++) {
+	for (unsigned int i = 0; i < expresion.size(); i++) {
 		caracter = expresion.at(i);
 		if (caracter == '+' || caracter == '-' || caracter == '*' || caracter == '/' || caracter == '^' || caracter == '(' || caracter == ')') {
 			if (pila.pilaVacia()) {
@@ -231,7 +231,6 @@ void notacionPolacaInversa(string expresion) {
 	}
 	cout << endl;
 	pila.~Pila();
-	delete polacaInversa;
 }
 
 void notacionPolaca(string expresion) {
@@ -247,7 +246,7 @@ void notacionPolaca(string expresion) {
 
 	cout << "Expresion antes de la transformacion: " << expresion << endl;
 
-	for (int i = 0; i < expresion.length(); i++) {
+	for (unsigned int i = 0; i < expresion.size(); i++) {
 		charAux = expresion.at(i);
 		if (charAux == '(' && !(pila.pilaVacia())) {
 			do {
@@ -288,20 +287,131 @@ void notacionPolaca(string expresion) {
 	pila.~Pila();
 }
 
+bool verificarOperadoresYOperandos(string expresion) {
+	char charAux;
+	for (unsigned int i = 0; i < expresion.length(); i++) {
+		charAux = expresion.at(i);
+		if (charAux == '+' || charAux == '-' || charAux == '*' || charAux == '/' || charAux == '^' || charAux == '(' || charAux == ')') {
+			continue;
+		}
+		else {
+			if (charAux >= 65 && charAux <= 90 || charAux >= 97 && charAux <= 122) {
+				continue;
+			}
+			else {
+				return false;
+			}
+		}
+		
+	}
+	return true;
+}
+
+bool verificarParentesis(string expresion) {
+	int contParentAbierto = 0;
+	int contParentCerrado = 0;
+	char charAux;
+	for (unsigned int i = 0; i < expresion.length(); i++) {
+		charAux = expresion.at(i);
+		if (charAux == '(') {
+			contParentAbierto++;
+		}
+		if (charAux == ')') {
+			contParentCerrado++;
+		}
+	}
+	if (contParentAbierto == contParentCerrado) {
+		return true;
+	}
+	return false;
+}
+
+bool verificarExpresion(string expresion) {
+	if (verificarOperadoresYOperandos(expresion)) {
+		if (verificarParentesis(expresion)) {
+			return true;
+		}
+	}
+	return false;
+}
+
 //Funcion principal
 int main(int args, char* argsv[]) {
-	//Code Here
 
+	string expresion;
+	int opc;
+	
+	cout << "Bienvenido al programa de Notacion Polaca" << endl;
+
+	do {
+		cout << "Ingrese la opcion de la operacion que desea realizar: " << endl;
+		cout << "1 - De Notacion Infija a Notacion Polaca (Prefija)." << endl;
+		cout << "2 - De Notacion Infija a Notacion Polaca Inversa (Postfija)." << endl;
+		cout << "0 - Salir del programa." << endl;
+		cin >> opc;
+		if (opc > 2 || opc < 0) {
+			cerr << "Error: Usted ha ingresado una opcion incorrecta." << endl;
+			cerr << "Intente nuevamente." << endl;
+		}
+
+		if (opc == 0) {
+			cout << "Hasta Luego!!!" << endl;
+			break;
+		}
+
+		if (opc == 1) {
+			cout << "Ingrese la expresion a evaluar: ";
+			cin >> expresion;
+			cout << endl;
+
+			if (verificarExpresion(expresion)) {
+				cout << "Notacion Polaca (Prefija): " << endl;
+				notacionPolaca(expresion);
+			}
+			else {
+				cerr << "ERROR: Ha ocurrido un error con la expresion ingresada." << endl;
+				cerr << "Posibles errores: " << endl;
+				cerr << "1 - Posible falta de parentesis por cerrar." << endl;
+				cerr << "2 - Operadores u Operandos no permitidos en el programa." << endl;
+				cerr << "Intente arreglando su expresion o ingresando una nueva." << endl;
+				continue;
+			}
+		}
+
+		if (opc == 2) {
+			cout << "Ingrese la expresion a evaluar: ";
+			cin >> expresion;
+			cout << endl;
+
+			if (verificarExpresion(expresion)) {
+				cout << "Notacion Polaca inversa (Postfija): " << endl;
+				notacionPolacaInversa(expresion);
+			}
+			else {
+				cerr << "ERROR: Ha ocurrido un error con la expresion ingresada." << endl;
+				cerr << "Posibles errores: " << endl;
+				cerr << "1 - Posible falta de parentesis por cerrar." << endl;
+				cerr << "2 - Operadores u Operandos no permitidos en el programa." << endl;
+				cerr << "Intente arreglando su expresion o ingresando una nueva." << endl;
+				continue;
+			}
+		}
+		cout << endl;
+	} while (true);
+	
+	
+	//Pruebas durante producción
+	// --------------------------------------------
 	//Notacion Polaca Inversa
 	//notacionPolacaInversa("a*(b+c-(d/e^f)-g)-h");
 	//notacionPolacaInversa("a*b/(a+c)");
 	//notacionPolacaInversa("a*b/a+c");
 	//notacionPolacaInversa("(a-b)^c+d");
-
+	// --------------------------------------------
 	//Notacion Polaca
-	notacionPolaca("a*b/(a+c)");
-	notacionPolaca("a*b/a+c");
-	notacionPolaca("(a-b)^c+d");
+	//notacionPolaca("a*b/(a+c)");
+	//notacionPolaca("a*b/a+c");
+	//notacionPolaca("(a-b)^c+d");
 
 	return 0;
 }
