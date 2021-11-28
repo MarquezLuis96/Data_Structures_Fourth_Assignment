@@ -231,6 +231,55 @@ void notacionPolacaInversa(string expresion) {
 	}
 	cout << endl;
 	pila.~Pila();
+	delete polacaInversa;
+}
+
+void notacionPolaca(string expresion) {
+	Pila<char> pila;
+
+	char charAux;
+
+	char arrayAux[MAX];
+	int contAux = 0;
+
+	char polaca[MAX];
+	int contPolaca = 0;
+
+	cout << "Expresion antes de la transformacion: " << expresion << endl;
+
+	for (int i = 0; i < expresion.length(); i++) {
+		charAux = expresion.at(i);
+		if (charAux == '(' && !(pila.pilaVacia())) {
+			do {
+				polaca[contPolaca++] = pila.pop();
+			} while (!(pila.pilaVacia()));
+			for (int i = 0; i < contAux; i++) {
+				polaca[contPolaca++] = arrayAux[i];
+			}
+			contAux = 0;
+		}
+		
+		if (charAux == '+' || charAux == '-' || charAux == '*' || charAux == '/' || charAux == '^') {
+			pila.push(charAux);
+		}
+		else {
+			arrayAux[contAux++] = charAux;
+		}
+	}
+
+	while (!(pila.pilaVacia())) {
+		polaca[contPolaca++] = pila.pop();
+	}
+
+	for (int i = 0; i < contAux; i++) {
+		polaca[contPolaca++] = arrayAux[i];
+	}
+
+	cout << "Expresion luego de la transformacion: ";
+	for (int i = 0; i < contPolaca; i++) {
+		cout << polaca[i];
+	}
+	cout << endl;
 }
 
 //Funcion principal
@@ -243,6 +292,10 @@ int main(int args, char* argsv[]) {
 	//notacionPolacaInversa("a*b/a+c");
 	//notacionPolacaInversa("(a-b)^c+d");
 
+	//Notacion Polaca
+	notacionPolaca("a*b/(a+c)");
+	notacionPolaca("a*b/a+c");
+	notacionPolaca("(a-b)^c+d");
 
 	return 0;
 }
