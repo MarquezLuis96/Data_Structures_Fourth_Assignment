@@ -1,5 +1,6 @@
 //Headers
 #include <iostream>
+const int MAX = 100;
 
 //Declaracion de namespaces
 using namespace std;
@@ -55,7 +56,7 @@ template <class dataType>
 bool Pila<dataType>::limpiarPila() {
 	Nodo* aux;
 	if (pilaVacia()) {
-		cerr << "Error: La pila ya se encuentra vacia." << endl;
+		//cerr << "Error: La pila ya se encuentra vacia." << endl;
 		return false;
 	}
 
@@ -124,8 +125,126 @@ void Pila<dataType>::imprimirElementos() {
 	}
 }
 
+//RETORNA TRUE SI VA A LA PILA
+bool compararOperadores(char nuevoOperador, Pila<char> *pila) {
+	if (pila->pilaVacia()) {
+		return true;
+	}
+
+	char charAux = pila->topeDePila();
+	
+	if (nuevoOperador == '(') {
+		return true;
+	}
+
+	if (nuevoOperador == '^') {
+		return true;
+	}
+
+	if (nuevoOperador == '+' && charAux == '-' || nuevoOperador == '+' && charAux == '(') {
+		return true;
+	}
+
+	if (nuevoOperador == '-' && charAux == '(') {
+		return true;
+	}
+
+	if (nuevoOperador == '*' || nuevoOperador == '/') {
+		if (nuevoOperador == '*') {
+			if (charAux == '/' || charAux == '+' || charAux == '-' || charAux == '(') {
+				return	true;
+			}
+		}
+		
+		if (nuevoOperador == '/') {
+			if (charAux == '+' || charAux == '-' || charAux == '(') {
+				return true;
+			}
+		}
+	}
+
+	return false;
+}
+
+void notacionPolacaInversa(string expresion) {
+	Pila<char> pila;
+	
+	char polacaInversa[MAX];
+	int contadorPolacaInversa = 0;
+	
+	char caracter;
+	char caracterAux;
+
+	cout << "Expresion antes de la transformacion: " << expresion << endl;
+
+	for (int i = 0; i < expresion.length(); i++) {
+		caracter = expresion.at(i);
+		if (caracter == '+' || caracter == '-' || caracter == '*' || caracter == '/' || caracter == '^' || caracter == '(' || caracter == ')') {
+			if (pila.pilaVacia()) {
+				pila.push(caracter);
+			}
+			else {
+				if (caracter == ')') {
+					//Entra aca si el caracter es el cierre del operador de maxima prioridad: parentesis ("()")
+					caracterAux = pila.topeDePila();
+					while (caracterAux != '(') {
+						polacaInversa[contadorPolacaInversa] = pila.pop();
+						contadorPolacaInversa++;
+						caracterAux = pila.topeDePila();
+						if (caracterAux == '(') {
+							pila.pop();
+						}
+					}
+				}
+				else {
+					bool bandera;
+					do {
+						bandera = compararOperadores(caracter, &pila);
+						if (bandera == true) {
+							pila.push(caracter);
+						}
+						else {
+							polacaInversa[contadorPolacaInversa] = pila.pop();
+							contadorPolacaInversa++;
+						}
+					} while (!bandera);
+				}
+			}
+		}
+		else {
+			polacaInversa[contadorPolacaInversa] = caracter;
+			contadorPolacaInversa++;
+		}
+
+		if (i == expresion.length()-1) {
+			while (!pila.pilaVacia()) {
+				polacaInversa[contadorPolacaInversa] = pila.pop();
+				contadorPolacaInversa++;
+			}
+			break;
+		}
+	}
+
+	cout << "Expresion luego de la transformacion: " << endl;
+	for (int i = 0; i < contadorPolacaInversa; i++) {
+		cout << polacaInversa[i];
+	}
+	cout << endl;
+	pila.~Pila();
+}
+
 //Funcion principal
 int main(int args, char* argsv[]) {
 	//Code Here
+
+	notacionPolacaInversa("a*(b+c-(d/e^f)-g)-h");
+	
+	notacionPolacaInversa("a*b/(a+c)");
+	
+	notacionPolacaInversa("a*b/a+c");
+
+	notacionPolacaInversa("(a-b)^c+d");
+
+
 	return 0;
 }
