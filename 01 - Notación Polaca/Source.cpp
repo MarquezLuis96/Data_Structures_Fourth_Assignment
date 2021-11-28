@@ -126,7 +126,7 @@ void Pila<dataType>::imprimirElementos() {
 }
 
 //RETORNA TRUE SI VA A LA PILA
-bool compararOperadores(char nuevoOperador, Pila<char> *pila) {
+bool compararOperadoresPolacaInversa(char nuevoOperador, Pila<char> *pila) {
 	if (pila->pilaVacia()) {
 		return true;
 	}
@@ -199,7 +199,7 @@ void notacionPolacaInversa(string expresion) {
 				else {
 					bool bandera;
 					do {
-						bandera = compararOperadores(caracter, &pila);
+						bandera = compararOperadoresPolacaInversa(caracter, &pila);
 						if (bandera == true) {
 							pila.push(caracter);
 						}
@@ -225,11 +225,66 @@ void notacionPolacaInversa(string expresion) {
 		}
 	}
 
-	cout << "Expresion luego de la transformacion: " << endl;
+	cout << "Expresion luego de la transformacion: ";
 	for (int i = 0; i < contadorPolacaInversa; i++) {
 		cout << polacaInversa[i];
 	}
 	cout << endl;
+	pila.~Pila();
+	delete polacaInversa;
+}
+
+void notacionPolaca(string expresion) {
+	Pila<char> pila;
+
+	char charAux;
+
+	char arrayAux[MAX];
+	int contAux = 0;
+
+	char polaca[MAX];
+	int contPolaca = 0;
+
+	cout << "Expresion antes de la transformacion: " << expresion << endl;
+
+	for (int i = 0; i < expresion.length(); i++) {
+		charAux = expresion.at(i);
+		if (charAux == '(' && !(pila.pilaVacia())) {
+			do {
+				polaca[contPolaca++] = pila.pop();
+			} while (!(pila.pilaVacia()));
+			for (int i = 0; i < contAux; i++) {
+				polaca[contPolaca++] = arrayAux[i];
+			}
+			contAux = 0;
+		}
+
+		if (charAux == '(' || charAux == ')') {
+			continue;
+		}
+		
+		if (charAux == '+' || charAux == '-' || charAux == '*' || charAux == '/' || charAux == '^') {
+			pila.push(charAux);
+		}
+		else {
+			arrayAux[contAux++] = charAux;
+		}
+	}
+
+	while (!(pila.pilaVacia())) {
+		polaca[contPolaca++] = pila.pop();
+	}
+
+	for (int i = 0; i < contAux; i++) {
+		polaca[contPolaca++] = arrayAux[i];
+	}
+
+	cout << "Expresion luego de la transformacion: ";
+	for (int i = 0; i < contPolaca; i++) {
+		cout << polaca[i];
+	}
+	cout << endl;
+
 	pila.~Pila();
 }
 
@@ -237,14 +292,16 @@ void notacionPolacaInversa(string expresion) {
 int main(int args, char* argsv[]) {
 	//Code Here
 
-	notacionPolacaInversa("a*(b+c-(d/e^f)-g)-h");
-	
-	notacionPolacaInversa("a*b/(a+c)");
-	
-	notacionPolacaInversa("a*b/a+c");
+	//Notacion Polaca Inversa
+	//notacionPolacaInversa("a*(b+c-(d/e^f)-g)-h");
+	//notacionPolacaInversa("a*b/(a+c)");
+	//notacionPolacaInversa("a*b/a+c");
+	//notacionPolacaInversa("(a-b)^c+d");
 
-	notacionPolacaInversa("(a-b)^c+d");
-
+	//Notacion Polaca
+	notacionPolaca("a*b/(a+c)");
+	notacionPolaca("a*b/a+c");
+	notacionPolaca("(a-b)^c+d");
 
 	return 0;
 }
