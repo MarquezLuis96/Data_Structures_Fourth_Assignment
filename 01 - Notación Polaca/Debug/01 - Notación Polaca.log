@@ -1,6 +1,2 @@
 ﻿  Source.cpp
-C:\Users\LAMC\Desktop\Cuarta Asignación\Data_Structures_Fourth_Assignment\01 - Notación Polaca\Source.cpp(180,20): warning C4018: '<': no coinciden signed/unsigned
-C:\Users\LAMC\Desktop\Cuarta Asignación\Data_Structures_Fourth_Assignment\01 - Notación Polaca\Source.cpp(234,22): warning C4156: eliminación de expresión de matriz sin utilizar el formato de matriz de 'delete'; formato de matriz sustituido
-C:\Users\LAMC\Desktop\Cuarta Asignación\Data_Structures_Fourth_Assignment\01 - Notación Polaca\Source.cpp(234,22): warning C4154: eliminación de una expresión de matriz; suministrada una conversión a puntero
-C:\Users\LAMC\Desktop\Cuarta Asignación\Data_Structures_Fourth_Assignment\01 - Notación Polaca\Source.cpp(250,20): warning C4018: '<': no coinciden signed/unsigned
   01 - Notación Polaca.vcxproj -> C:\Users\LAMC\Desktop\Cuarta Asignación\Data_Structures_Fourth_Assignment\01 - Notación Polaca\Debug\01 - Notación Polaca.exe
