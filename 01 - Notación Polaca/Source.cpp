@@ -126,7 +126,7 @@ void Pila<dataType>::imprimirElementos() {
 }
 
 //RETORNA TRUE SI VA A LA PILA
-bool compararOperadores(char nuevoOperador, Pila<char> *pila) {
+bool compararOperadoresPolacaInversa(char nuevoOperador, Pila<char> *pila) {
 	if (pila->pilaVacia()) {
 		return true;
 	}
@@ -199,7 +199,7 @@ void notacionPolacaInversa(string expresion) {
 				else {
 					bool bandera;
 					do {
-						bandera = compararOperadores(caracter, &pila);
+						bandera = compararOperadoresPolacaInversa(caracter, &pila);
 						if (bandera == true) {
 							pila.push(caracter);
 						}
@@ -225,7 +225,7 @@ void notacionPolacaInversa(string expresion) {
 		}
 	}
 
-	cout << "Expresion luego de la transformacion: " << endl;
+	cout << "Expresion luego de la transformacion: ";
 	for (int i = 0; i < contadorPolacaInversa; i++) {
 		cout << polacaInversa[i];
 	}
@@ -237,13 +237,11 @@ void notacionPolacaInversa(string expresion) {
 int main(int args, char* argsv[]) {
 	//Code Here
 
-	notacionPolacaInversa("a*(b+c-(d/e^f)-g)-h");
-	
-	notacionPolacaInversa("a*b/(a+c)");
-	
-	notacionPolacaInversa("a*b/a+c");
-
-	notacionPolacaInversa("(a-b)^c+d");
+	//Notacion Polaca Inversa
+	//notacionPolacaInversa("a*(b+c-(d/e^f)-g)-h");
+	//notacionPolacaInversa("a*b/(a+c)");
+	//notacionPolacaInversa("a*b/a+c");
+	//notacionPolacaInversa("(a-b)^c+d");
 
 
 	return 0;
