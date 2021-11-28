@@ -258,6 +258,10 @@ void notacionPolaca(string expresion) {
 			}
 			contAux = 0;
 		}
+
+		if (charAux == '(' || charAux == ')') {
+			continue;
+		}
 		
 		if (charAux == '+' || charAux == '-' || charAux == '*' || charAux == '/' || charAux == '^') {
 			pila.push(charAux);
@@ -280,6 +284,8 @@ void notacionPolaca(string expresion) {
 		cout << polaca[i];
 	}
 	cout << endl;
+
+	pila.~Pila();
 }
 
 //Funcion principal
