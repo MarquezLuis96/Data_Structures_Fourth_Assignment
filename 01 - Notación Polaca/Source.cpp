@@ -335,10 +335,69 @@ bool verificarExpresion(string expresion) {
 	return false;
 }
 
+int agruparCaracteres(string expresion, char listaDeOperandos[]) {
+	char charAux;
+	int contListaOpr = 0;
+	bool ban = false;
+	for (unsigned int i = 0; i < expresion.length(); i++) {
+		charAux = expresion.at(i);
+		if (charAux >= 65 && charAux <= 90 || charAux >= 97 && charAux <= 122) {
+			for (int j = 0; j < contListaOpr; j++) {
+				if (charAux == listaDeOperandos[j]) {
+					ban = true;
+					break;
+				}
+				else {
+					ban = false;
+				}
+			}
+			if (ban == false) {
+				listaDeOperandos[contListaOpr] = charAux;
+				contListaOpr++;
+			}
+		}
+	}
+
+	return contListaOpr;
+}
+
+void llenarConValores(int numeroDeOpr, char listaOpr[], int valoresOpr[]) {
+	for (int i = 0; i < numeroDeOpr; i++) {
+		cout << "Ingrese un valor para '" << listaOpr[i] << "' : ";
+		cin >> valoresOpr[i];
+		cout << endl;
+	}
+}
+
+void imprimirTablaDeValores(int numeroDeOpr, char listaOpr[], int valoresOpr[]) {
+	cout << "La tabla de valores es la siguiente: " << endl;
+
+	for (int i = 0; i < numeroDeOpr; i++) {
+		cout << "|" << listaOpr[i] << "|";
+	}
+	cout << endl;
+
+	for (int i = 0; i < numeroDeOpr; i++) {
+		cout << "|" << valoresOpr[i] << "|";
+	}
+	cout << endl;
+}
+
 //Funcion principal
 int main(int args, char* argsv[]) {
 
-	string expresion;
+	string expresion = "A+B*(C*D(E-F)^G)";
+	char listaOpr[MAX];
+	int valoresOpr[MAX];
+	int numeroDeOpr;
+
+	numeroDeOpr = agruparCaracteres(expresion, listaOpr);
+	llenarConValores(numeroDeOpr, listaOpr, valoresOpr);
+	imprimirTablaDeValores(numeroDeOpr, listaOpr, valoresOpr);
+
+
+
+	/*string expresion;
 	int opc;
 	
 	cout << "Bienvenido al programa de Notacion Polaca" << endl;
@@ -397,7 +456,7 @@ int main(int args, char* argsv[]) {
 			}
 		}
 		cout << endl;
-	} while (true);
+	} while (true);*/
 	
 	
 	//Pruebas durante producción
