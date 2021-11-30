@@ -2,6 +2,8 @@
 *.opendb
 *.db-wal
 *.db-shm
+/Debug
+/.vs
 
 # Prerequisites
 *.d
