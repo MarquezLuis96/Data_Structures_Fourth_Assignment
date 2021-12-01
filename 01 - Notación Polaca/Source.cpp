@@ -424,10 +424,10 @@ int buscarValorEnTabla(char buscar, int numeroDeOpr, char listaOpr[], int valore
 
 float postEvaluacion(string expresion, int numeroDeOpr, char listaOpr[], int valoresOpr[]) {
 	Pila<char> pilaOperandos;
+	Pila<float> resultados;
 	char charAux;
 	float operadorA, operadorB;
-	float resultados[MAX];
-	int contResultados = 0;
+
 	for (unsigned int i = 0; i < expresion.length(); i++) {
 		charAux = expresion.at(i);
 
@@ -438,26 +438,26 @@ float postEvaluacion(string expresion, int numeroDeOpr, char listaOpr[], int val
 
 		if (charAux == '+' || charAux == '-' || charAux == '*' || charAux == '/' || charAux == '^') {
 			if (pilaOperandos.pilaVacia()) {
-				operadorA = resultados[contResultados-2];
-				operadorB = resultados[contResultados-1];
-				contResultados -= 2;
-				resultados[contResultados] = operacionSegunSea(charAux, operadorA, operadorB);
+				operadorB = resultados.pop();
+				operadorA = resultados.pop();
+				resultados.push(operacionSegunSea(charAux, operadorA, operadorB));
 			}
 			else {
 				if (pilaOperandos.getCantElements() == 1) {
-					operadorA = resultados[contResultados-1];
+					operadorA = resultados.pop();
 					operadorB = (float) buscarValorEnTabla(pilaOperandos.pop(), numeroDeOpr, listaOpr, valoresOpr);
-					resultados[contResultados-1] = operacionSegunSea(charAux, operadorA, operadorB);
+					resultados.push(operacionSegunSea(charAux, operadorA, operadorB));
 				}
 				else {
 					operadorB = (float) buscarValorEnTabla(pilaOperandos.pop(), numeroDeOpr, listaOpr, valoresOpr);
 					operadorA = (float) buscarValorEnTabla(pilaOperandos.pop(), numeroDeOpr, listaOpr, valoresOpr);
-					resultados[contResultados++] = operacionSegunSea(charAux, operadorA, operadorB);
+					resultados.push(operacionSegunSea(charAux, operadorA, operadorB));
 				}
 			}
 		}
 	}
-	return resultados[0];
+
+	return resultados.pop();
 }
 
 void evaluacionPostfija(string expresion) {
