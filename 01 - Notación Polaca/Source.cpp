@@ -383,18 +383,104 @@ void imprimirTablaDeValores(int numeroDeOpr, char listaOpr[], int valoresOpr[]) 
 	cout << endl;
 }
 
-//Funcion principal
-int main(int args, char* argsv[]) {
+float operacionSegunSea(char operador, float operandoA, float operandoB) {
+	switch (operador) {
+		case '+':
+			return operandoA + operandoB;
+			break;
+		case '-':
+			return operandoA - operandoB;
+			break;
+		case '*':
+			return operandoA * operandoB;
+			break;
+		case '/':
+			if (operandoB != 0.0) {
+				return operandoA / operandoB;
+			}
+			else {
+				cerr << "ERROR: La division entre cero no existe." << endl;
+				return NULL;
+			}
+			break;
+		case '^':
+			return pow(operandoA, operandoB);
+			break;
+		default:
+			cerr << "Ha ocurrido un error inesperado..." << endl;
+			return NULL;
+			break;
+	}
+}
 
-	string expresion = "A+B*(C*D(E-F)^G)";
+int buscarValorEnTabla(char buscar, int numeroDeOpr, char listaOpr[], int valoresOpr[]) {
+	for (int i = 0; i < numeroDeOpr; i++) {
+		if (buscar == listaOpr[i]) {
+			return valoresOpr[i];
+		}
+	}
+	return NULL;
+}
+
+float postEvaluacion(string expresion, int numeroDeOpr, char listaOpr[], int valoresOpr[]) {
+	Pila<char> pilaOperandos;
+	char charAux;
+	float operadorA, operadorB;
+	float resultados[MAX];
+	int contResultados = 0;
+	for (unsigned int i = 0; i < expresion.length(); i++) {
+		charAux = expresion.at(i);
+
+		if (charAux >= 65 && charAux <= 90 || charAux >= 97 && charAux <= 122) {
+			pilaOperandos.push(charAux);
+			continue;
+		}
+
+		if (charAux == '+' || charAux == '-' || charAux == '*' || charAux == '/' || charAux == '^') {
+			if (pilaOperandos.pilaVacia()) {
+				operadorA = resultados[contResultados-2];
+				operadorB = resultados[contResultados-1];
+				contResultados -= 2;
+				resultados[contResultados] = operacionSegunSea(charAux, operadorA, operadorB);
+			}
+			else {
+				if (pilaOperandos.getCantElements() == 1) {
+					operadorA = resultados[contResultados-1];
+					operadorB = (float) buscarValorEnTabla(pilaOperandos.pop(), numeroDeOpr, listaOpr, valoresOpr);
+					resultados[contResultados-1] = operacionSegunSea(charAux, operadorA, operadorB);
+				}
+				else {
+					operadorB = (float) buscarValorEnTabla(pilaOperandos.pop(), numeroDeOpr, listaOpr, valoresOpr);
+					operadorA = (float) buscarValorEnTabla(pilaOperandos.pop(), numeroDeOpr, listaOpr, valoresOpr);
+					resultados[contResultados++] = operacionSegunSea(charAux, operadorA, operadorB);
+				}
+			}
+		}
+	}
+	return resultados[0];
+}
+
+void evaluacionPostfija(string expresion) {
 	char listaOpr[MAX];
 	int valoresOpr[MAX];
 	int numeroDeOpr;
+	float resultado;
 
 	numeroDeOpr = agruparCaracteres(expresion, listaOpr);
 	llenarConValores(numeroDeOpr, listaOpr, valoresOpr);
 	imprimirTablaDeValores(numeroDeOpr, listaOpr, valoresOpr);
+	resultado = postEvaluacion(expresion, numeroDeOpr, listaOpr, valoresOpr);
 
+	cout << "El resultado de la expresion dados los valores a sustituir es: " << resultado << endl;
+}
+
+//Funcion principal
+int main(int args, char* argsv[]) {
+
+	string expresion = "AB*AC+/";
+	//string expresion = "AB*A/C+";
+	//string expresion = "AB-C^D+";
+	evaluacionPostfija(expresion);
 
 
 	/*string expresion;
