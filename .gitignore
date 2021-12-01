@@ -2,6 +2,13 @@
 *.opendb
 *.db-wal
 *.db-shm
+/Debug
+/.vs
+*.idb
+*.pdb
+*.suo
+*.db
+*.tlog
 
 # Prerequisites
 *.d
