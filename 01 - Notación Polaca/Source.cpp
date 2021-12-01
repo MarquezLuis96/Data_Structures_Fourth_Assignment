@@ -166,7 +166,7 @@ bool compararOperadoresPolacaInversa(char nuevoOperador, Pila<char> *pila) {
 	return false;
 }
 
-void notacionPolacaInversa(string expresion) {
+string notacionPolacaInversa(string expresion) {
 	Pila<char> pila;
 	
 	char polacaInversa[MAX];
@@ -225,15 +225,18 @@ void notacionPolacaInversa(string expresion) {
 		}
 	}
 
+	string tempString = "";
 	cout << "Expresion luego de la transformacion: ";
 	for (int i = 0; i < contadorPolacaInversa; i++) {
+		tempString += polacaInversa[i];
 		cout << polacaInversa[i];
 	}
 	cout << endl;
 	pila.~Pila();
+	return tempString;
 }
 
-void notacionPolaca(string expresion) {
+string notacionPolaca(string expresion) {
 	Pila<char> pila;
 
 	char charAux;
@@ -278,13 +281,17 @@ void notacionPolaca(string expresion) {
 		polaca[contPolaca++] = arrayAux[i];
 	}
 
+
+	string tempString = "";
 	cout << "Expresion luego de la transformacion: ";
 	for (int i = 0; i < contPolaca; i++) {
+		tempString += polaca[i];
 		cout << polaca[i];
 	}
 	cout << endl;
 
 	pila.~Pila();
+	return tempString;
 }
 
 bool verificarOperadoresYOperandos(string expresion) {
@@ -575,13 +582,14 @@ int main(int args, char* argsv[]) {
 		}
 
 		if (opc == 1) {
+			string prefija;
 			cout << "Ingrese la expresion a evaluar: ";
 			cin >> expresion;
 			cout << endl;
 
 			if (verificarExpresion(expresion)) {
 				cout << "Notacion Polaca (Prefija): " << endl;
-				notacionPolaca(expresion);
+				prefija = notacionPolaca(expresion);
 			}
 			else {
 				cerr << "ERROR: Ha ocurrido un error con la expresion ingresada." << endl;
@@ -591,16 +599,19 @@ int main(int args, char* argsv[]) {
 				cerr << "Intente arreglando su expresion o ingresando una nueva." << endl;
 				continue;
 			}
+			cout << "Ingrese los valores para sustituir en la notacion prefija: " << endl;
+			evaluacionPrefija(prefija);
 		}
 
 		if (opc == 2) {
+			string postfija;
 			cout << "Ingrese la expresion a evaluar: ";
 			cin >> expresion;
 			cout << endl;
 
 			if (verificarExpresion(expresion)) {
 				cout << "Notacion Polaca inversa (Postfija): " << endl;
-				notacionPolacaInversa(expresion);
+				postfija = notacionPolacaInversa(expresion);
 			}
 			else {
 				cerr << "ERROR: Ha ocurrido un error con la expresion ingresada." << endl;
@@ -610,6 +621,8 @@ int main(int args, char* argsv[]) {
 				cerr << "Intente arreglando su expresion o ingresando una nueva." << endl;
 				continue;
 			}
+			cout << "Ingrese los valores para sustituir en la notacion postfija: " << endl;
+			evaluacionPostfija(postfija);
 		}
 		cout << endl;
 	} while (true);
