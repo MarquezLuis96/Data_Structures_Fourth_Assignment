@@ -335,6 +335,221 @@ bool verificarExpresion(string expresion) {
 	return false;
 }
 
+int agruparCaracteres(string expresion, char listaDeOperandos[]) {
+	char charAux;
+	int contListaOpr = 0;
+	bool ban = false;
+	for (unsigned int i = 0; i < expresion.length(); i++) {
+		charAux = expresion.at(i);
+		if (charAux >= 65 && charAux <= 90 || charAux >= 97 && charAux <= 122) {
+			for (int j = 0; j < contListaOpr; j++) {
+				if (charAux == listaDeOperandos[j]) {
+					ban = true;
+					break;
+				}
+				else {
+					ban = false;
+				}
+			}
+			if (ban == false) {
+				listaDeOperandos[contListaOpr] = charAux;
+				contListaOpr++;
+			}
+		}
+	}
+
+	return contListaOpr;
+}
+
+void llenarConValores(int numeroDeOpr, char listaOpr[], int valoresOpr[]) {
+	for (int i = 0; i < numeroDeOpr; i++) {
+		cout << "Ingrese un valor para '" << listaOpr[i] << "' : ";
+		cin >> valoresOpr[i];
+		cout << endl;
+	}
+}
+
+void imprimirTablaDeValores(int numeroDeOpr, char listaOpr[], int valoresOpr[]) {
+	cout << "La tabla de valores es la siguiente: " << endl;
+
+	for (int i = 0; i < numeroDeOpr; i++) {
+		cout << "|" << listaOpr[i] << "|";
+	}
+	cout << endl;
+
+	for (int i = 0; i < numeroDeOpr; i++) {
+		cout << "|" << valoresOpr[i] << "|";
+	}
+	cout << endl;
+}
+
+float operacionSegunSea(char operador, float operandoA, float operandoB) {
+	switch (operador) {
+		case '+':
+			return operandoA + operandoB;
+			break;
+		case '-':
+			return operandoA - operandoB;
+			break;
+		case '*':
+			return operandoA * operandoB;
+			break;
+		case '/':
+			if (operandoB != 0.0) {
+				return operandoA / operandoB;
+			}
+			else {
+				cerr << "ERROR: La division entre cero no existe." << endl;
+				return NULL;
+			}
+			break;
+		case '^':
+			return pow(operandoA, operandoB);
+			break;
+		default:
+			cerr << "Ha ocurrido un error inesperado..." << endl;
+			return NULL;
+			break;
+	}
+}
+
+int buscarValorEnTabla(char buscar, int numeroDeOpr, char listaOpr[], int valoresOpr[]) {
+	for (int i = 0; i < numeroDeOpr; i++) {
+		if (buscar == listaOpr[i]) {
+			return valoresOpr[i];
+		}
+	}
+	return NULL;
+}
+
+float postEvaluacion(string expresion, int numeroDeOpr, char listaOpr[], int valoresOpr[]) {
+	Pila<char> pilaOperandos;
+	Pila<float> resultados;
+	char charAux;
+	float operadorA, operadorB;
+
+	for (unsigned int i = 0; i < expresion.length(); i++) {
+		charAux = expresion.at(i);
+
+		if (charAux >= 65 && charAux <= 90 || charAux >= 97 && charAux <= 122) {
+			pilaOperandos.push(charAux);
+			continue;
+		}
+
+		if (charAux == '+' || charAux == '-' || charAux == '*' || charAux == '/' || charAux == '^') {
+			if (pilaOperandos.pilaVacia()) {
+				operadorB = resultados.pop();
+				operadorA = resultados.pop();
+				resultados.push(operacionSegunSea(charAux, operadorA, operadorB));
+			}
+			else {
+				if (pilaOperandos.getCantElements() == 1) {
+					operadorA = resultados.pop();
+					operadorB = (float) buscarValorEnTabla(pilaOperandos.pop(), numeroDeOpr, listaOpr, valoresOpr);
+					resultados.push(operacionSegunSea(charAux, operadorA, operadorB));
+				}
+				else {
+					operadorB = (float) buscarValorEnTabla(pilaOperandos.pop(), numeroDeOpr, listaOpr, valoresOpr);
+					operadorA = (float) buscarValorEnTabla(pilaOperandos.pop(), numeroDeOpr, listaOpr, valoresOpr);
+					resultados.push(operacionSegunSea(charAux, operadorA, operadorB));
+				}
+			}
+		}
+	}
+
+	return resultados.pop();
+}
+
+void evaluacionPostfija(string expresion) {
+	char listaOpr[MAX];
+	int valoresOpr[MAX];
+	int numeroDeOpr;
+	float resultado;
+
+	numeroDeOpr = agruparCaracteres(expresion, listaOpr);
+	llenarConValores(numeroDeOpr, listaOpr, valoresOpr);
+	imprimirTablaDeValores(numeroDeOpr, listaOpr, valoresOpr);
+	resultado = postEvaluacion(expresion, numeroDeOpr, listaOpr, valoresOpr);
+
+	cout << "El resultado de la expresion dados los valores a sustituir es: " << resultado << endl;
+}
+
+float preEvaluacion(string expresion, int numeroDeOpr, char listaOpr[], int valoresOpr[]) {
+	Pila<char> operandos;
+	Pila<char> operadores;
+	Pila<float> resultado;
+	char charAux;
+
+	float operandoA, operandoB;
+
+	//True para cuando lo ultimo ingresado fue un operador y false para cuando lo ultimo ingresado fue un operando
+	bool ban = false;
+
+	for (unsigned int i = 0; i < expresion.length(); i++) {
+		charAux = expresion.at(i);
+		
+		if (charAux == '+' || charAux == '-' || charAux == '*' || charAux == '/' || charAux == '^') {
+			//Entra aca si es un caracter de operador
+			//Cambio bandera para indicar la entrada de un operador
+			ban = true;
+
+			//Apilar los operadores
+			operadores.push(charAux);
+		}
+		else {
+			//Entra aca si es un caracter de operando
+			
+			if (ban == true) {
+				//Viene de ingresar un caracter de operador
+				
+				if (operandos.getCantElements() < 2) {
+					//No hay los suficientes operadores, asi que hago push y no cambio la bandera para que vuelva a entrar aca
+					operandos.push(charAux);
+				}
+
+				if (operandos.getCantElements() == 2) {
+					operandoB = (float) buscarValorEnTabla(operandos.pop(), numeroDeOpr, listaOpr, valoresOpr);
+					operandoA = (float) buscarValorEnTabla(operandos.pop(), numeroDeOpr, listaOpr, valoresOpr);
+					resultado.push(operacionSegunSea(operadores.pop(), operandoA, operandoB));
+					ban = false;
+					//ahora si cambio a false la bandera
+				}
+			}
+			else {
+				//Viene de ingresar un caracter de operando
+				if (!resultado.pilaVacia() && !operadores.pilaVacia()) {
+					operandoA = resultado.pop();
+					operandoB = (float) buscarValorEnTabla(charAux, numeroDeOpr, listaOpr, valoresOpr);
+					resultado.push(operacionSegunSea(operadores.pop(), operandoA, operandoB));
+					ban = false; //por si a las moscas, aunque no creo que llegue false por aca
+				}
+			}
+		}
+	}
+
+	while (!operadores.pilaVacia()) {
+		operandoB = resultado.pop();
+		operandoA = resultado.pop();
+		resultado.push(operacionSegunSea(operadores.pop(), operandoA, operandoB));
+	}
+
+	return resultado.pop();
+}
+
+void evaluacionPrefija(string expresion) {
+	char listaOpr[MAX];
+	int valoresOpr[MAX];
+	int numeroDeOpr;
+	float resultado;
+
+	numeroDeOpr = agruparCaracteres(expresion, listaOpr);
+	llenarConValores(numeroDeOpr, listaOpr, valoresOpr);
+	imprimirTablaDeValores(numeroDeOpr, listaOpr, valoresOpr);
+	resultado = preEvaluacion(expresion, numeroDeOpr, listaOpr, valoresOpr);
+
+	cout << "El resultado de la expresion dados los valores a sustituir es: " << resultado << endl;
+}
+
 //Funcion principal
 int main(int args, char* argsv[]) {
 
@@ -401,7 +616,7 @@ int main(int args, char* argsv[]) {
 	
 	
 	//Pruebas durante producción
-	// --------------------------------------------
+	// -------------------------------------------- 
 	//Notacion Polaca Inversa
 	//notacionPolacaInversa("a*(b+c-(d/e^f)-g)-h");
 	//notacionPolacaInversa("a*b/(a+c)");
@@ -412,6 +627,18 @@ int main(int args, char* argsv[]) {
 	//notacionPolaca("a*b/(a+c)");
 	//notacionPolaca("a*b/a+c");
 	//notacionPolaca("(a-b)^c+d");
+	// --------------------------------------------
+	// Evaluacion de expresiones postfijas
+	//string expresion = "AB*AC+/";
+	//string expresion = "AB*A/C+";
+	//string expresion = "AB-C^D+";
+	//evaluacionPostfija(expresion);
+	// --------------------------------------------
+	// Evaluacion de expresiones prefijas
+	//string expresion = "/*AB+AC";
+	//string expresion = "+/*ABAC";
+	//string expresion = "+^-ABCD";
+	//evaluacionPrefija(expresion);
 
 	return 0;
 }
