@@ -474,16 +474,86 @@ void evaluacionPostfija(string expresion) {
 	cout << "El resultado de la expresion dados los valores a sustituir es: " << resultado << endl;
 }
 
+float preEvaluacion(string expresion, int numeroDeOpr, char listaOpr[], int valoresOpr[]) {
+	Pila<char> operandos;
+	Pila<char> operadores;
+	Pila<float> resultado;
+	char charAux;
+
+	float operandoA, operandoB;
+
+	//True para cuando lo ultimo ingresado fue un operador y false para cuando lo ultimo ingresado fue un operando
+	bool ban = false;
+
+	for (unsigned int i = 0; i < expresion.length(); i++) {
+		charAux = expresion.at(i);
+		
+		if (charAux == '+' || charAux == '-' || charAux == '*' || charAux == '/' || charAux == '^') {
+			//Entra aca si es un caracter de operador
+			//Cambio bandera para indicar la entrada de un operador
+			ban = true;
+
+			//Apilar los operadores
+			operadores.push(charAux);
+		}
+		else {
+			//Entra aca si es un caracter de operando
+			
+			if (ban == true) {
+				//Viene de ingresar un caracter de operador
+				
+				if (operandos.getCantElements() < 2) {
+					//No hay los suficientes operadores, asi que hago push y no cambio la bandera para que vuelva a entrar aca
+					operandos.push(charAux);
+				}
+
+				if (operandos.getCantElements() == 2) {
+					operandoB = (float) buscarValorEnTabla(operandos.pop(), numeroDeOpr, listaOpr, valoresOpr);
+					operandoA = (float) buscarValorEnTabla(operandos.pop(), numeroDeOpr, listaOpr, valoresOpr);
+					resultado.push(operacionSegunSea(operadores.pop(), operandoA, operandoB));
+					ban = false;
+					//ahora si cambio a false la bandera
+				}
+			}
+			else {
+				//Viene de ingresar un caracter de operando
+				if (!resultado.pilaVacia() && !operadores.pilaVacia()) {
+					operandoA = resultado.pop();
+					operandoB = (float) buscarValorEnTabla(charAux, numeroDeOpr, listaOpr, valoresOpr);
+					resultado.push(operacionSegunSea(operadores.pop(), operandoA, operandoB));
+					ban = false; //por si a las moscas, aunque no creo que llegue false por aca
+				}
+			}
+		}
+	}
+
+	while (!operadores.pilaVacia()) {
+		operandoB = resultado.pop();
+		operandoA = resultado.pop();
+		resultado.push(operacionSegunSea(operadores.pop(), operandoA, operandoB));
+	}
+
+	return resultado.pop();
+}
+
+void evaluacionPrefija(string expresion) {
+	char listaOpr[MAX];
+	int valoresOpr[MAX];
+	int numeroDeOpr;
+	float resultado;
+
+	numeroDeOpr = agruparCaracteres(expresion, listaOpr);
+	llenarConValores(numeroDeOpr, listaOpr, valoresOpr);
+	imprimirTablaDeValores(numeroDeOpr, listaOpr, valoresOpr);
+	resultado = preEvaluacion(expresion, numeroDeOpr, listaOpr, valoresOpr);
+
+	cout << "El resultado de la expresion dados los valores a sustituir es: " << resultado << endl;
+}
+
 //Funcion principal
 int main(int args, char* argsv[]) {
 
-	string expresion = "AB*AC+/";
-	//string expresion = "AB*A/C+";
-	//string expresion = "AB-C^D+";
-	evaluacionPostfija(expresion);
-
-
-	/*string expresion;
+	string expresion;
 	int opc;
 	
 	cout << "Bienvenido al programa de Notacion Polaca" << endl;
@@ -542,11 +612,11 @@ int main(int args, char* argsv[]) {
 			}
 		}
 		cout << endl;
-	} while (true);*/
+	} while (true);
 	
 	
 	//Pruebas durante producción
-	// --------------------------------------------
+	// -------------------------------------------- 
 	//Notacion Polaca Inversa
 	//notacionPolacaInversa("a*(b+c-(d/e^f)-g)-h");
 	//notacionPolacaInversa("a*b/(a+c)");
@@ -557,6 +627,18 @@ int main(int args, char* argsv[]) {
 	//notacionPolaca("a*b/(a+c)");
 	//notacionPolaca("a*b/a+c");
 	//notacionPolaca("(a-b)^c+d");
+	// --------------------------------------------
+	// Evaluacion de expresiones postfijas
+	//string expresion = "AB*AC+/";
+	//string expresion = "AB*A/C+";
+	//string expresion = "AB-C^D+";
+	//evaluacionPostfija(expresion);
+	// --------------------------------------------
+	// Evaluacion de expresiones prefijas
+	//string expresion = "/*AB+AC";
+	//string expresion = "+/*ABAC";
+	//string expresion = "+^-ABCD";
+	//evaluacionPrefija(expresion);
 
 	return 0;
 }
